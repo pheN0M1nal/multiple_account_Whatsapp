@@ -1,0 +1,40 @@
+{
+	"name": "multiple_whatsapp_app",
+	"version": "1.0.0",
+	"description": "node app to connect multiple whatsapp account in 1 single app",
+	"main": "server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"server": "nodemon server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pheN0M1nal/multiple_account_Whatsapp.git"
+	},
+	"keywords": [
+		"whatsapp",
+		"web-whatapp.js",
+		"multi-whatsapp",
+		"node_whatsapp"
+	],
+	"author": "noman",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/pheN0M1nal/multiple_account_Whatsapp/issues"
+	},
+	"homepage": "https://github.com/pheN0M1nal/multiple_account_Whatsapp#readme",
+	"dependencies": {
+		"colors": "^1.4.0",
+		"concurrently": "^7.5.0",
+		"dotenv": "^16.0.3",
+		"express": "^4.18.2",
+		"express-async-handler": "^1.2.0",
+		"morgan": "^1.10.0",
+		"qrcode-terminal": "^0.12.0",
+		"whatsapp-web.js": "^1.18.2"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.20",
+		"prettier": "^2.7.1"
+	}
+}
