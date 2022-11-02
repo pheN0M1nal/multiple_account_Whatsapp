@@ -2,19 +2,8 @@ const express = require('express')
 const { colors } = require('colors')
 const dotenv = require('dotenv')
 const { morgan } = require('morgan')
-
-const { messageRoutes } = require('./routes/messageRoutes.js')
 const { errorHandler } = require('./middlewares/errorMiddleware.js')
-const { initClient, sendMessageToNum } = require('./whatsapp/index.js')
-
-// import express from 'express'
-// import colors from 'colors'
-// import dotenv from 'dotenv'
-// import morgan from 'morgan'
-
-// import messageRoutes from './routes/messageRoutes.js'
-// import { errorHandler } from './middlewares/errorMiddleware.js'
-//import { initClient, sendMessageToNum } from './whatsapp/index.js'
+const { initClient } = require('./whatsapp/index.js')
 
 // initializing express app
 const app = express()
@@ -30,22 +19,47 @@ app.use(express.json())
 // configuring
 dotenv.config()
 
-app.get('/', (req, res) => {
-	res.send('he')
-})
+// initiating whatsapp client
+const client = initClient()
 
-// apis
-app.use('/api', messageRoutes)
+// listening messaging
+client.on('ready', () => {
+	console.log('Client is ready ...')
+
+	// getting messages
+	app.post('/api/send-message', (req, res) => {
+		const { number, message } = req.body
+
+		if (!message || !number || message === '' || number === '') {
+			res.json({ error: 'Please enter a message body and valid number' })
+		} else {
+			client.getChats().then(chats => {
+				// selecting number
+				const selectedNum = chats.find(chat => chat.id.user === number)
+
+				// checking if number exists?
+				if (!selectedNum) {
+					res.json({ error: "Given number don't exist on the chat list." })
+				} else {
+					client
+						.sendMessage(selectedNum.id._serialized, message)
+						.then(function (resp) {
+							res.json({ messageSent: true })
+						})
+						.catch(function (error) {
+							res.json({ messageSent: false, error: error })
+						})
+				}
+			})
+		}
+	})
+})
 
 // // error middleware
 app.use(errorHandler)
 
-// whatsapp
-const client = initClient()
-sendMessageToNum(client)
-
 // configuring port
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 6000
 
 // listening
 app.listen(
