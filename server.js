@@ -31,15 +31,21 @@ client.on('ready', () => {
 		const { number, message } = req.body
 
 		if (!message || !number || message === '' || number === '') {
-			res.json({ error: 'Please enter a message body and valid number' })
+			res.json({
+				messageSent: false,
+				error: 'Please enter a message body and valid number',
+			})
 		} else {
-			client.getChats().then(chats => {
+			client.getContacts().then(chats => {
 				// selecting number
 				const selectedNum = chats.find(chat => chat.id.user === number)
 
 				// checking if number exists?
 				if (!selectedNum) {
-					res.json({ error: "Given number don't exist on the chat list." })
+					res.json({
+						messageSent: false,
+						error: "Given number don't exist on the chat list.",
+					})
 				} else {
 					client
 						.sendMessage(selectedNum.id._serialized, message)
