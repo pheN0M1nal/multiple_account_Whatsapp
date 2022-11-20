@@ -10,14 +10,17 @@ import { useUsersContext } from 'context/usersContext'
 const Sidebar = ({ setLogin, history }) => {
 	//const [contacts, setContacts] = useState([])
 
-	const { users: contacts, profilePics, logout } = useUsersContext()
+	const {
+		users: contacts,
+		profilePics,
+		logout,
+		lastestMessages,
+	} = useUsersContext()
 
 	useEffect(() => {
 		if (contacts === [] && profilePics === []) {
 			history.push('/')
 		}
-
-		console.log(profilePics)
 	}, [contacts, profilePics, history])
 
 	// users && setContacts(users)
@@ -90,6 +93,7 @@ const Sidebar = ({ setLogin, history }) => {
 						key={index}
 						contact={contact}
 						profilePics={profilePics}
+						lastestMessages={lastestMessages}
 					/>
 				))}
 			</div>

@@ -15,6 +15,7 @@ const UsersProvider = ({ children }) => {
 
 	const [users, setUsers] = useState([])
 	const [profilePics, setProfilePics] = useState([])
+	const [lastestMessages, setLastestMessages] = useState([])
 
 	const logout = () => {
 		console.log('context logout')
@@ -31,7 +32,13 @@ const UsersProvider = ({ children }) => {
 			setUsers(chats[0] ? chats : [])
 		})
 
-		socket.current.on('requestPp')
+		socket.current.emit('requestLastMessage')
+		socket.current.on('lastMessages', lastMessages => {
+			console.log(lastMessages)
+			setLastestMessages(lastMessages)
+		})
+
+		socket.current.emit('requestPp')
 		socket.current.on('profile_pics', pics => {
 			console.log('profilepics usercontext', pics)
 			setProfilePics(pics)
@@ -117,6 +124,7 @@ const UsersProvider = ({ children }) => {
 				setUserAsUnread,
 				addNewMessage,
 				logout,
+				lastestMessages,
 			}}>
 			{children}
 		</UsersContext.Provider>

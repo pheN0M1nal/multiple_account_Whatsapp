@@ -2,10 +2,13 @@ const express = require('express')
 const http = require('http')
 const { colors } = require('colors')
 const dotenv = require('dotenv')
+const fs = require('fs')
+const path = require('path')
 const { morgan } = require('morgan')
 const { errorHandler } = require('./middlewares/errorMiddleware.js')
 const { initClient } = require('./whatsapp/index.js')
 const { Client, LocalAuth } = require('whatsapp-web.js')
+const { emit } = require('process')
 
 // initializing express app
 const app = express()
@@ -37,173 +40,217 @@ app.use(express.json())
 // configuring
 dotenv.config()
 
-// initiating whatsapp client
-const client = new Client({
-	authStrategy: new LocalAuth({ clientId: 'client-one' }),
-})
+// error middleware
+app.use(errorHandler)
 
-// initializing variables
-var qrcode = 'empty'
-var allChats = []
-var loggedIn = false
-var userMessages = []
-var profilePics = []
-
-// io connection
-io.on('connection', socket => {
-	//logout
-	socket.on('logout', data => {
-		console.log('logout'.red)
-		client.logout()
-		loggedIn = false
+try {
+	// initiating whatsapp client
+	const client = new Client({
+		authStrategy: new LocalAuth({ clientId: 'client-one' }),
 	})
 
-	// connected user
-	console.log(`Connected user: ${socket.id}`.green)
+	/* ---------- INITIALIZING VARIABLES ---------- */
+	var qrcode = 'empty'
+	var allChats = []
+	var loggedIn = false
+	var userMessages = []
+	var profilePics = []
+	var selectedChat = ''
+	var lastMessages = []
 
-	//qr
-	client.on('qr', qr => {
-		qrcode = qr
-		socket.emit('get_qr', { qr: qr })
-		console.log('Qr asked'.blue)
-	})
+	/* ---------- MAKING CONNECTION & SOCKET ---------- */
+	io.on('connection', socket => {
+		/* ---------- CONNECTED USER ---------- */
+		console.log(`Connected user: ${socket.id}`.green)
 
-	// sending qr if already fetched
-	socket.on('request_qr', () => {
-		if (qrcode !== 'empty') {
-			socket.emit('get_qr', { qr: qrcode })
-		}
-	})
+		/* ---------- SENDING INITIAL QR ---------- */
+		client.on('qr', qr => {
+			qrcode = qr
+			socket.emit('get_qr', { qr: qr })
+			console.log('Qr asked'.blue)
+		})
 
-	// client ready
-	client.on('ready', () => {
-		// ready msg
-		console.log('Client is ready ...')
+		/* ---------- SENDING EXISTING QR ---------- */
+		socket.on('request_qr', () => {
+			if (qrcode !== 'empty') {
+				socket.emit('get_qr', { qr: qrcode })
+			}
+		})
 
-		// getting all chats
-		client
-			.getChats()
-			.then(chats => {
-				socket.emit('get_chats', chats)
-				// profile pics
-				chats.forEach(chat => {
-					chat.getContact().then(contact => {
-						contact.getProfilePicUrl().then(pic => {
-							profilePics.push({ chatId: chat.id._serialized, picture: pic })
+		/* ---------- WHEN CLIENT IS READY ---------- */
+		client.on('ready', () => {
+			console.log('Client is ready ...')
+
+			/* ---------- GETTING CHATS AND PROFILE PICTURES ---------- */
+			client
+				.getChats()
+				.then(chats => {
+					//sending chats
+					socket.emit('get_chats', chats)
+
+					// profile pics
+					chats.forEach(chat => {
+						chat.getContact().then(contact => {
+							contact.getProfilePicUrl().then(pic => {
+								profilePics.push({ chatId: chat.id._serialized, picture: pic })
+							})
 						})
 					})
+
+					/* ---------- SAVING LAST MESSAGES OF ALL CHATS ---------- */
+					chats.forEach(chat => {
+						chat.fetchMessages((limit = 1)).then(msg => {
+							lastMessages.push({
+								chatId: chat.id_serialized,
+								message: msg,
+							})
+						})
+					})
+
+					// saving chats
+					allChats = chats.slice()
+				})
+				.catch(err => {
+					console.log(err)
 				})
 
-				allChats = chats.slice()
+			// sending user is logged in
+			socket.emit('LoggedIn', { loggedIn: true })
+
+			// maintaining user login
+			loggedIn = true
+		})
+
+		/* ---------- SENDING LAST MESSAGES IF REQUESTED ---------- */
+		socket.on('requestLastMessage', () => {
+			socket.emit('lastMessages', lastMessages)
+		})
+
+		/* ---------- SENDING CHATS IF REQUESTED ---------- */
+		socket.on('requestChat', () => {
+			client.getChats().then(chats => {
+				socket.emit('get_chats', chats)
 			})
-			.catch(err => {
-				console.log(err)
+		})
+
+		/* ---------- SENDING PROFILE PICS IF REQUESTED ---------- */
+		// socket.on('requestPp', () => {
+		// 	socket.emit('profile_pics', profilePics)
+		// })
+
+		/* ---------- SENDING CHATS ??? ---------- */
+		socket.emit('get_chats', allChats)
+
+		/* ---------- SENDING LOGIN STATUS ---------- */
+		if (loggedIn) {
+			socket.emit('LoggedIn')
+		}
+
+		/* ---------- SENDING MESSAGE ACKNOLEDGMENT ---------- */
+		client.on('message_ack', (message, ack) => {
+			// sending recieved message
+			if (selectedChat === message.id.remote) {
+				socket.emit('ackMsg', message)
+			}
+		})
+
+		/* ---------- WHEN RECIEVED MESSAGE ---------- */
+		client.on('message', msg => {
+			// selecting chat's msg
+			const user = allChats.filter(
+				user => user.id._serialized === msg._data.id.remote
+			)[0]
+
+			// updating user messages
+			user.fetchMessages((limit = 100)).then(messages => {
+				socket.emit('getMessages', messages)
 			})
 
-		// // fetching profile pictures
-		// if (profilePics.length === 0) {
-		// 	console.log('prof')
+			// sending updated chats 1
+			client.getChats().then(chats => {
+				socket.emit('get_chats', chats)
+			})
+		})
+
+		/* ---------- WHEN NEW MESSAGE IS SEND ---------- */
+		client.on('message_create', message => {
+			client.getChats().then(chats => {
+				socket.emit('get_chats', chats)
+			})
+		})
+
+		/* ---------- WHEN SENDING MESSAGE ---------- */
+		socket.on('send_message', obj => {
+			client.sendMessage(obj.chatId, obj.message).then(message => {
+				// selecting user
+				const user = allChats.filter(
+					user => user.id._serialized === obj.chatId
+				)[0]
+
+				// updtaing user messages
+				user.fetchMessages().then(messages => {
+					socket.emit('getMessages', [...messages, message])
+				})
+			})
+
+			// sending updated chats
+			client.getChats().then(chats => {
+				socket.emit('get_chats', chats)
+			})
+		})
+
+		// /* ---------- FETCHING PROFILE PICTURES ---------- */
+		// if (profilePics === [] && allChats !== []) {
 		// 	allChats.forEach(chat => {
 		// 		chat.getContact().then(contact => {
 		// 			contact.getProfilePicUrl().then(pic => {
+		// 				// saving pictures
 		// 				profilePics.push({ chatId: chat.id._serialized, picture: pic })
 		// 			})
 		// 		})
 		// 	})
 		// }
 
-		// sending user is logged in
-		socket.emit('LoggedIn', { loggedIn: true })
-
-		// maintaining user login
-		loggedIn = true
-	})
-
-	socket.on('requestChat', () => {
-		socket.emit('get_chats', allChats)
-	})
-
-	socket.on('requestPp', () => {
-		socket.emit('profile_pics', profilePics)
-	})
-	socket.emit('get_chats', allChats)
-
-	// sending login status
-	if (loggedIn) {
-		socket.emit('LoggedIn')
-	}
-
-	socket.emit('profile_pics', profilePics)
-
-	// On message
-	client.on('message', msg => {
-		// selecting chat's msg
-		const user = allChats.filter(
-			user => user.id._serialized === msg._data.id.remote
-		)[0]
-
-		// updating user messages
-		user.fetchMessages((limit = 100)).then(messages => {
-			socket.emit('getMessages', messages)
-		})
-	})
-
-	// on sending message
-	socket.on('send_message', obj => {
-		client.sendMessage(obj.chatId, obj.message).then(message => {
-			// selecting user
-			const user = allChats.filter(
-				user => user.id._serialized === obj.chatId
-			)[0]
-
-			// updtaing user messages
-			user.fetchMessages().then(messages => {
-				socket.emit('getMessages', [...messages, message])
-			})
-		})
-	})
-
-	// fetching profile pictures
-	if (profilePics === [] && allChats !== []) {
-		allChats.forEach(chat => {
-			chat.getContact().then(contact => {
-				contact.getProfilePicUrl().then(pic => {
-					profilePics.push({ chatId: chat.id._serialized, picture: pic })
-				})
-			})
-		})
-	}
-
-	// profilePics already Exists
-	if (profilePics !== []) {
-		socket.emit('profile_pics', profilePics)
-	}
-
-	// fetching messages against userId
-	socket.on('userIdForMessages', userId => {
-		console.log(userId)
-		if (userId && allChats) {
-			const user = allChats.filter(user => user.id._serialized === userId)[0]
-			user.fetchMessages((limit = 100)).then(messages => {
-				//socket.emit('getMessages', messages)
-			})
+		/* ---------- SENDING PROFILE PICTURES ---------- */
+		if (profilePics !== []) {
+			socket.emit('profile_pics', profilePics)
 		}
+
+		/* ---------- SAVING USER ID & SENDING INITIAL MESSAGE LIST ---------- */
+		socket.on('userIdForMessages', userId => {
+			// saving chat id
+			selectedChat = userId
+			if (userId && allChats) {
+				// selecting chat
+				const user = allChats.filter(user => user.id._serialized === userId)[0]
+				user.fetchMessages((limit = 100)).then(messages => {
+					// sending messages
+					socket.emit('getMessages', messages)
+				})
+			}
+		})
+
+		/* ---------- WHEN SOCKET DISCONNECTING ---------- */
+		socket.on('disconnecting_', data => {
+			console.log(`${data.componentName} is disconnecting.`.red)
+		})
+
+		/* ---------- WHEN SOCKET GETS DISCONNECTED ---------- */
+		socket.on('disconnect', () => {
+			console.log(`${socket.id} is disconnected.`.red)
+			socket.disconnect()
+		})
+
+		/* ---------- USER LOGOUT ---------- */
+		socket.on('logout', data => {
+			console.log('logout'.red)
+			client.logout()
+			loggedIn = false
+		})
 	})
 
-	// sending which socket is getting disconnected
-	socket.on('disconnecting_', data => {
-		console.log(`${data.componentName} is disconnecting.`.red)
-	})
-
-	// disconnecting
-	socket.on('disconnect', () => {
-		console.log(`${socket.id} is disconnected.`.red)
-		socket.disconnect()
-	})
-})
-
-// // error middleware
-app.use(errorHandler)
-
-// initializing client
-client.initialize()
+	// initializing client
+	client.initialize()
+} catch (error) {
+	console.log(`Error in main try catch: ${error}`)
+}

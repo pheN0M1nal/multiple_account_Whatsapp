@@ -5,12 +5,19 @@ import formatTime from 'utils/formatTime'
 import { useUsersContext } from 'context/usersContext'
 import noPic from '../../assets/images/noPic.png'
 
-const Contact = ({ contact, profilePics }) => {
+const Contact = ({ contact, profilePics, lastestMessages }) => {
 	//onst [pic, setPic] = useState('pic')
 
 	const selectedObj = profilePics.filter(
 		pic => pic.chatId === contact.id._serialized
 	)[0]
+
+	const lastMessage = lastestMessages.filter(lastestMessage => {
+		if (lastestMessage.message.length === 0) {
+			return false
+		}
+		return lastestMessage?.message[0]?.id.remote === contact.id._serialized
+	})[0]
 
 	const { setUserAsUnread } = useUsersContext()
 
@@ -68,7 +75,17 @@ const Contact = ({ contact, profilePics }) => {
 							className={`sidebar-contact__message ${
 								!!contact.unreadCount ? 'sidebar-contact__message--unread' : ''
 							}`}>
-							{contact.typing ? <i> typing...</i> : 'last message'}
+							{contact.typing ? (
+								<i> typing...</i>
+							) : lastMessage ? (
+								lastMessage?.message[0]?.body ? (
+									lastMessage.message[0]?.body
+								) : (
+									''
+								)
+							) : (
+								''
+							)}
 						</span>
 					</p>
 					<div className='sidebar-contact__icons'>

@@ -44,11 +44,14 @@ const Chat = ({ match, history }) => {
 
 		socket.current = io(SOCKET_URL)
 
-		user && socket.current.emit('userIdForMessages', user.id._serialized)
+		socket.current.emit('userIdForMessages', user?.id._serialized)
 
 		socket.current.on('getMessages', userMessages => {
-			console.log(userMessages)
-			setMessages(userMessages)
+			console.log('itsme 50')
+			if (userMessages[0]?.id.remote === userId) {
+				setMessages(userMessages)
+			}
+
 			scrollToLastMsg()
 			//userMessages && setMessages(userMessages)
 		})
@@ -58,9 +61,30 @@ const Chat = ({ match, history }) => {
 		})
 
 		socket.current.on('getSendedMessage', msg => {
+			console.log('itsme 64')
+
 			setMessages([msg])
 			scrollToLastMsg()
 		})
+
+		// socket.current.on('ackMsg', ackMsg => {
+		// 	var flag = true
+
+		// 	var newMsg = messages
+
+		// 	const newMsg_ = messages.map(msg => {
+		// 		if (msg.id._serialized === ackMsg.id._serialized) {
+		// 			return { ...msg, ack: ackMsg.ack }
+		// 		}
+		// 		flag = false
+		// 		return msg
+		// 	})
+
+		// 	flag
+		// 		? setMessages(newMsg.length !== 0 ? newMsg : newMsg_)
+		// 		: setMessages([...messages, ackMsg])
+		// 	console.log(newMsg)
+		// })
 
 		return () => {
 			socket.current.emit('disconnecting_', { componentName: 'QrScreen' })
@@ -82,9 +106,11 @@ const Chat = ({ match, history }) => {
 	}
 
 	const scrollToLastMsg = () => {
-		messages.length !== 0 && lastMsgRef.current.scrollIntoView()
+		messages.length !== 0 && lastMsgRef.current?.scrollIntoView()
 	}
-
+	const getTimestampInSeconds = () => {
+		return Math.floor(Date.now() / 1000)
+	}
 	const submitNewMessage = () => {
 		//addNewMessage(user.id.user, newMessage)
 		//setNewMessage('')
@@ -107,7 +133,7 @@ const Chat = ({ match, history }) => {
 				<div className='chat__bg'></div>
 				<Header
 					user={user}
-					profilePic={selectedObj.picture ? selectedObj.picture : noPic}
+					profilePic={selectedObj?.picture ? selectedObj.picture : noPic}
 					openProfileSidebar={() => openSidebar(setShowProfileSidebar)}
 					openSearchSidebar={() => openSidebar(setShowSearchSidebar)}
 				/>
