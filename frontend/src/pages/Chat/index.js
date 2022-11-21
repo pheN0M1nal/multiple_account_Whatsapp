@@ -8,9 +8,8 @@ import Icon from 'components/Icon'
 import Search from './components/Search'
 import Profile from './components/Profile'
 import Convo from './components/Convo'
-import { useUsersContext } from 'context/usersContext'
+import { useMainContext } from 'context/mainContext'
 import { dummyMessages } from 'data/dummyMessages'
-import noPic from '../../assets/images/noPic.png'
 
 import io from 'socket.io-client'
 
@@ -21,22 +20,16 @@ const SOCKET_URL = window.location.origin.includes('localhost')
 const Chat = ({ match, history }) => {
 	const [messages, setMessages] = useState([])
 
-	const { users, setUserAsUnread, addNewMessage, profilePics } =
-		useUsersContext()
+	const { chats } = useMainContext()
 
 	const userId = match.params.id
 
-	let user = users.filter(user => user.id._serialized === userId)[0]
+	let user = chats.filter(user => user.id._serialized === userId)[0]
 
-	const selectedObj = profilePics.filter(
-		pic => pic.chatId === user?.id._serialized
-	)[0]
 	let socket = useRef(null)
 	const lastMsgRef = useRef(null)
 	const [showAttach, setShowAttach] = useState(false)
 	const [showEmojis, setShowEmojis] = useState(false)
-	const [showProfileSidebar, setShowProfileSidebar] = useState(false)
-	const [showSearchSidebar, setShowSearchSidebar] = useState(false)
 	const [newMessage, setNewMessage] = useState('')
 
 	useEffect(() => {
@@ -54,10 +47,6 @@ const Chat = ({ match, history }) => {
 
 			scrollToLastMsg()
 			//userMessages && setMessages(userMessages)
-		})
-
-		socket.current.on('profile_pics', pics => {
-			console.log('pics', pics)
 		})
 
 		socket.current.on('getSendedMessage', msg => {
@@ -94,16 +83,16 @@ const Chat = ({ match, history }) => {
 
 	// useEffect(() => {
 	// 	user && scrollToLastMsg()
-	// }, [users])
+	// }, [chats])
 
-	const openSidebar = cb => {
-		// close any open sidebar first
-		setShowProfileSidebar(false)
-		setShowSearchSidebar(false)
+	// const openSidebar = cb => {
+	// 	// close any open sidebar first
+	// 	setShowProfileSidebar(false)
+	// 	setShowSearchSidebar(false)
 
-		// call callback fn
-		cb(true)
-	}
+	// 	// call callback fn
+	// 	cb(true)
+	// }
 
 	const scrollToLastMsg = () => {
 		messages.length !== 0 && lastMsgRef.current?.scrollIntoView()
@@ -133,9 +122,8 @@ const Chat = ({ match, history }) => {
 				<div className='chat__bg'></div>
 				<Header
 					user={user}
-					profilePic={selectedObj?.picture ? selectedObj.picture : noPic}
-					openProfileSidebar={() => openSidebar(setShowProfileSidebar)}
-					openSearchSidebar={() => openSidebar(setShowSearchSidebar)}
+					// openProfileSidebar={() => openSidebar(setShowProfileSidebar)}
+					// openSearchSidebar={() => openSidebar(setShowSearchSidebar)}
 				/>
 
 				<div className='chat__content'>

@@ -1,20 +1,16 @@
 import React from 'react'
 import Icon from 'components/Icon'
 import OptionsBtn from 'components/OptionsButton'
+import noPic from '../../../assets/images/noPic.png'
 
-const Header = ({
-	user,
-	profilePic,
-	openProfileSidebar,
-	openSearchSidebar,
-}) => {
+const Header = ({ user, openProfileSidebar, openSearchSidebar }) => {
 	return (
 		<header className='header chat__header'>
 			<div
 				className='chat__avatar-wrapper'
 				onClick={openProfileSidebar}>
 				<img
-					src={profilePic}
+					src={user.pic !== 'empty' ? user.pic : noPic}
 					alt={user?.name}
 					className='avatar'
 				/>

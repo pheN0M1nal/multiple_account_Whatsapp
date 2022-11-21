@@ -4,13 +4,13 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import './assets/css/index.css'
-import { UsersProvider } from 'context/usersContext'
+import { MainProvider } from 'context/mainContext'
 
 ReactDOM.render(
 	<>
-		<UsersProvider>
+		<MainProvider>
 			<App />
-		</UsersProvider>
+		</MainProvider>
 	</>,
 	document.getElementById('root')
 )

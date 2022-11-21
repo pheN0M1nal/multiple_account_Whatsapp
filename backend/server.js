@@ -9,6 +9,7 @@ const { errorHandler } = require('./middlewares/errorMiddleware.js')
 const { initClient } = require('./whatsapp/index.js')
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const { emit } = require('process')
+const { resolve } = require('path')
 
 // initializing express app
 const app = express()
@@ -57,6 +58,8 @@ try {
 	var profilePics = []
 	var selectedChat = ''
 	var lastMessages = []
+	var allContacts = []
+	var clientIsReady = false
 
 	/* ---------- MAKING CONNECTION & SOCKET ---------- */
 	io.on('connection', socket => {
@@ -80,50 +83,83 @@ try {
 		/* ---------- WHEN CLIENT IS READY ---------- */
 		client.on('ready', () => {
 			console.log('Client is ready ...')
+			clientIsReady = true
+			socket.emit('clientIsReady')
+			/* ---------- GETTING CONTACT ---------- */
+			client.getContacts().then(contacts => {
+				allContacts = contacts.slice()
+			})
 
 			/* ---------- GETTING CHATS AND PROFILE PICTURES ---------- */
 			client
 				.getChats()
 				.then(chats => {
+					// sending a new promise for chats
+					return new Promise((resolve, reject) => {
+						resolve({ chats: chats })
+					})
+				})
+				.then(data => {
+					return new Promise((resolve, reject) => {
+						Promise.all(
+							allContacts.map(contact => contact.getProfilePicUrl())
+						).then(res => {
+							const contacts = allContacts.map((contact, index) => {
+								return { ...contact, pic: res[index] }
+							})
+							resolve({ ...data, contacts: contacts })
+						})
+					})
+				})
+				.then(data => {
+					return new Promise((resolve, reject) => {
+						/* ---------- SAVING LAST MESSAGES OF ALL CHATS ---------- */
+						data.chats.forEach(chat => {
+							chat.fetchMessages((limit = 1)).then(msg => {
+								lastMessages.push({
+									chatId: chat.id_serialized,
+									message: msg,
+								})
+							})
+						})
+
+						resolve({ ...data, lastestMsg: lastMessages })
+					})
+				})
+				.then(data => {
+					// console.log('chats', data.chats[0])
+					// console.log('p', data.profPics[0])
+					// console.log('chats', data.lastestMsg[0])
+					// saving data
+					allChats = data.chats.slice()
+					allContacts = data.contacts.slice()
+					lastMessages = data.lastestMsg.slice()
+
+					//sending conatcts
+					socket.emit('contacts', allContacts)
+
 					//sending chats
-					socket.emit('get_chats', chats)
+					socket.emit('get_chats', allChats)
 
-					// profile pics
-					chats.forEach(chat => {
-						chat.getContact().then(contact => {
-							contact.getProfilePicUrl().then(pic => {
-								profilePics.push({ chatId: chat.id._serialized, picture: pic })
-							})
-						})
-					})
+					//sending chats
+					socket.emit('lastMessages', lastMessages)
 
-					/* ---------- SAVING LAST MESSAGES OF ALL CHATS ---------- */
-					chats.forEach(chat => {
-						chat.fetchMessages((limit = 1)).then(msg => {
-							lastMessages.push({
-								chatId: chat.id_serialized,
-								message: msg,
-							})
-						})
-					})
+					// sending user is logged in
+					socket.emit('LoggedIn')
 
-					// saving chats
-					allChats = chats.slice()
+					// maintaining user login
+					loggedIn = true
 				})
 				.catch(err => {
 					console.log(err)
 				})
-
-			// sending user is logged in
-			socket.emit('LoggedIn', { loggedIn: true })
-
-			// maintaining user login
-			loggedIn = true
 		})
+
+		/////////////////////////////////////////////////////////
 
 		/* ---------- SENDING LAST MESSAGES IF REQUESTED ---------- */
 		socket.on('requestLastMessage', () => {
-			socket.emit('lastMessages', lastMessages)
+			loggedIn && socket.emit('lastMessages', lastMessages)
 		})
 
 		/* ---------- SENDING CHATS IF REQUESTED ---------- */
@@ -134,16 +170,22 @@ try {
 		})
 
 		/* ---------- SENDING PROFILE PICS IF REQUESTED ---------- */
-		// socket.on('requestPp', () => {
-		// 	socket.emit('profile_pics', profilePics)
-		// })
+		socket.on('requestPp', () => {
+			loggedIn && socket.emit('profile_pics', profilePics)
+		})
 
 		/* ---------- SENDING CHATS ??? ---------- */
-		socket.emit('get_chats', allChats)
+		loggedIn && socket.emit('contacts', allContacts)
+		loggedIn && socket.emit('get_chats', allChats)
+
+		loggedIn && socket.emit('lastMessages', lastMessages)
 
 		/* ---------- SENDING LOGIN STATUS ---------- */
 		if (loggedIn) {
 			socket.emit('LoggedIn')
+		}
+		if (clientIsReady) {
+			socket.emit('clientIsReady')
 		}
 
 		/* ---------- SENDING MESSAGE ACKNOLEDGMENT ---------- */
@@ -166,18 +208,18 @@ try {
 				socket.emit('getMessages', messages)
 			})
 
-			// sending updated chats 1
-			client.getChats().then(chats => {
-				socket.emit('get_chats', chats)
-			})
+			// // sending updated chats 1
+			// client.getChats().then(chats => {
+			// 	socket.emit('get_chats', chats)
+			// })
 		})
 
 		/* ---------- WHEN NEW MESSAGE IS SEND ---------- */
-		client.on('message_create', message => {
-			client.getChats().then(chats => {
-				socket.emit('get_chats', chats)
-			})
-		})
+		// client.on('message_create', message => {
+		// 	client.getChats().then(chats => {
+		// 		socket.emit('get_chats', chats)
+		// 	})
+		// })
 
 		/* ---------- WHEN SENDING MESSAGE ---------- */
 		socket.on('send_message', obj => {
@@ -193,10 +235,10 @@ try {
 				})
 			})
 
-			// sending updated chats
-			client.getChats().then(chats => {
-				socket.emit('get_chats', chats)
-			})
+			// // sending updated chats
+			// client.getChats().then(chats => {
+			// 	socket.emit('get_chats', chats)
+			// })
 		})
 
 		// /* ---------- FETCHING PROFILE PICTURES ---------- */
@@ -213,7 +255,7 @@ try {
 
 		/* ---------- SENDING PROFILE PICTURES ---------- */
 		if (profilePics !== []) {
-			socket.emit('profile_pics', profilePics)
+			loggedIn && socket.emit('profile_pics', profilePics)
 		}
 
 		/* ---------- SAVING USER ID & SENDING INITIAL MESSAGE LIST ---------- */

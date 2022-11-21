@@ -5,23 +5,18 @@ import Icon from 'components/Icon'
 import Alert from './Alert'
 import Contact from './Contact'
 import OptionsBtn from 'components/OptionsButton'
-import { useUsersContext } from 'context/usersContext'
+import { useMainContext } from 'context/mainContext'
 
 const Sidebar = ({ setLogin, history }) => {
 	//const [contacts, setContacts] = useState([])
 
-	const {
-		users: contacts,
-		profilePics,
-		logout,
-		lastestMessages,
-	} = useUsersContext()
+	const { chats, logout, lastMessages } = useMainContext()
 
 	useEffect(() => {
-		if (contacts === [] && profilePics === []) {
+		if (chats === []) {
 			history.push('/')
 		}
-	}, [contacts, profilePics, history])
+	}, [chats, history])
 
 	// users && setContacts(users)
 
@@ -88,12 +83,11 @@ const Sidebar = ({ setLogin, history }) => {
 				/>
 			</div>
 			<div className='sidebar__contacts'>
-				{contacts.map((contact, index) => (
+				{chats.map((chat, index) => (
 					<Contact
 						key={index}
-						contact={contact}
-						profilePics={profilePics}
-						lastestMessages={lastestMessages}
+						chat={chat}
+						lastestMessages={lastMessages}
 					/>
 				))}
 			</div>
