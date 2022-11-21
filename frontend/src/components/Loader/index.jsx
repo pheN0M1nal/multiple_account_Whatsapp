@@ -1,7 +1,7 @@
 import React from 'react'
 import './styles/main.css'
 import Icon from '../Icon'
-
+//
 const Loader = ({ done }) => {
 	return (
 		<div className='loader'>
