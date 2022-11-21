@@ -5,15 +5,15 @@ import { InputComponent } from "../components/InputELement";
 import { FormComponent } from "../components/FormElement";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ImagePickerComponent } from "../../../helpers/fileManagement/ProfilePicturePickerComponent";
+import { ImagePickerComponent } from "../../../utils/fileManagement/ProfilePicturePickerComponent";
 import { Spinner } from "../../Global/Spinner";
-import { notifyFailure } from "../../../helpers/notifications/notifyFailure";
-import { HandleOnChangeInput } from "../../../helpers/formInput/HandleOnChangeInput";
-import { notifyApiErrorMessage } from "../../../helpers/notifications/notifyApiErrorMessage";
+import { notifyFailure } from "../../../utils/notifications/notifyFailure";
+import { HandleOnChangeInput } from "../../../utils/formInput/HandleOnChangeInput";
+import { notifyApiErrorMessage } from "../../../utils/notifications/notifyApiErrorMessage";
 import axiosServerInstance from "../../../config/api/axios";
 import { userSignup } from "../../../api";
-import { notifySuccess } from "../../../helpers/notifications/notifySuccess";
-import ReactToolTip from "../../../helpers/tooltipComponent";
+import { notifySuccess } from "../../../utils/notifications/notifySuccess";
+import ReactToolTip from "../../../utils/tooltipComponent";
 import { useCallback } from "react";
 
 // import { FormFooterPrompt } from "../components/FormFooterPrompt";
@@ -79,7 +79,7 @@ export const RegistrationForm = () => {
         if (!validateFields()) {
             return;
         }
-      
+
         let formData = new FormData();
         for (let field in data) {
             formData?.append(field, data[field]);
@@ -158,13 +158,13 @@ export const RegistrationForm = () => {
                     position="top"
                     title="Please Add your business name compulsory."
                 > */}
-                    <InputComponent
-                        placeholder={"Business name"}
-                        type="text"
-                        height={2.5}
-                        value={data?.business_name}
-                        onChange={(e) => HandleOnChangeInput(e, "business_name", setData, data)}
-                    />
+                <InputComponent
+                    placeholder={"Business name"}
+                    type="text"
+                    height={2.5}
+                    value={data?.business_name}
+                    onChange={(e) => HandleOnChangeInput(e, "business_name", setData, data)}
+                />
                 {/* </ReactToolTip> */}
             </div>
             <div className="inputOuter">
@@ -173,13 +173,13 @@ export const RegistrationForm = () => {
                     position="top"
                     title="Please Add your website address compulsory."
                 > */}
-                    <InputComponent
-                        placeholder={"website_address"}
-                        type="url"
-                        height={2.5}
-                        value={data?.website_address}
-                        onChange={(e) => HandleOnChangeInput(e, "website_address", setData, data)}
-                    />
+                <InputComponent
+                    placeholder={"website_address"}
+                    type="url"
+                    height={2.5}
+                    value={data?.website_address}
+                    onChange={(e) => HandleOnChangeInput(e, "website_address", setData, data)}
+                />
                 {/* </ReactToolTip> */}
             </div>
             <div className="inputOuter">

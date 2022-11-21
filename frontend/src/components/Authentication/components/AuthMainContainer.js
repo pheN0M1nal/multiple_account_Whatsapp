@@ -1,8 +1,6 @@
 import styled from "styled-components";
-import loginImg from "../../../static/images/Auth/female-hand-typing-keyboard-laptop.png";
-import resetImg from "../../../static/images/Auth/relax-leisure.png";
+import loginImg from "../../../assets/images/login_img.png";
 import { AuthenticationHeader } from "./Header";
-import Circle from "../../../static/images/Auth/circle.png";
 const StyledContainer = styled.div`
     display: flex;
     align-items: center;
@@ -13,21 +11,9 @@ const StyledContainer = styled.div`
     height: 100%;
 
     color: var(--custom-txt-color);
-    ${"" /* background-color: var(--custom-primary-bg); */}
     position: relative;
     z-index: 0;
-    ::after {
-        content: "";
-        position: absolute;
-        top: -100%;
-        right: -60%;
-        background-image: ${`url(${Circle})`};
-        background-position: center;
-        background-size: cover;
-        width: 50rem;
-        height: 50rem;
-        z-index: -1;
-    }
+
     .LoginFormOuter {
         width: 100%;
     }
@@ -57,11 +43,10 @@ const FormWrapper = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    border: 1px solid var(--custom-input-border);
-    background-color: var(--custom-secondry-bg);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     width: 100%;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: 44px;
     animation: shake 1s;
     @media (max-width: 1100px) {
         flex-direction: column-reverse;
@@ -101,21 +86,12 @@ export const AuthMainContainer = ({ mode, children }) => {
     return (
         <StyledContainer>
             <FormWrapper>
+                <div className=" Imagewrapper">
+                    <img src={mode === "login" && loginImg} alt="" />
+                </div>
                 <div className="AuthContent">
                     <AuthenticationHeader mode={mode} />
                     {children}
-                </div>
-                <div className=" Imagewrapper">
-                    <img
-                        src={
-                            mode === "login"
-                                ? loginImg
-                                : mode === "reset_password"
-                                ? resetImg
-                                : null
-                        }
-                        alt=""
-                    />
                 </div>
             </FormWrapper>
         </StyledContainer>

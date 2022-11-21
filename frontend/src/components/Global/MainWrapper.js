@@ -7,19 +7,17 @@ import { FooterContainer } from "./footer/Container";
 const StyledContainer = styled.div`
     padding: 0;
     margin: 0;
-    .allOuter {
-        display: flex;
+    height: 100%;
 
-        .MainContent {
-            width: 100%;
-            height: 100vh;
-            background-color: var(--custom-primary-bg);
-            color: var(--custom-white);
-            overflow: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    .MainContent {
+        width: 100%;
+        height: 100vh;
+        background-color: var(--custom-primary-bg);
+        color: var(--custom-white);
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 `;
 
@@ -45,12 +43,10 @@ export const MainWrapper = ({ currentPageAnchorKey_, currentSubNavKey_, ...props
             }}
         >
             <StyledContainer>
-                <div className="allOuter">
-                    <div className="MainContent">
-                        <NavigationContainer />
-                        <MainContainer>{props.children}</MainContainer>
-                        <FooterContainer />
-                    </div>
+                <div className="MainContent">
+                    <NavigationContainer />
+                    <MainContainer>{props.children}</MainContainer>
+                    <FooterContainer />
                 </div>
             </StyledContainer>
         </NavigationContext.Provider>

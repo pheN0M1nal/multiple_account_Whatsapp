@@ -7,9 +7,9 @@ import { FormComponent } from "../components/FormElement";
 import { InputComponent } from "../components/InputELement";
 import { Spinner } from "../../Global/Spinner";
 import styled from "styled-components";
-import { notifyFailure } from "../../../helpers/notifications/notifyFailure";
-import { HandleOnChangeInput } from "../../../helpers/formInput/HandleOnChangeInput";
-import { EmailRegex } from "../../../helpers/formValidators";
+// import { notifyFailure } from "../../../utils/notifications/notifyFailure";
+import { EmailRegex } from "../../../utils/formValidators";
+import { HandleOnChangeInput } from "../../../utils/formInput/HandleOnChangeInput";
 
 const Wrapper = styled.div`
     input {
@@ -49,11 +49,12 @@ export const LoginForm = () => {
         const fields = ["login", "password"];
         for (let field of fields) {
             if (!data[field]) {
-                notifyFailure(`${field} is required`);
+                // notifyFailure(`${field} is required`);
                 state = false;
             }
             if (!EmailRegex().test(data?.login)) {
-                notifyFailure(`${data?.login} is not valid Email`);
+                console.log(`${data?.login} is not valid Email`);
+                // notifyFailure(`${data?.login} is not valid Email`);
                 state = false;
             }
         }
@@ -86,15 +87,17 @@ export const LoginForm = () => {
     return (
         <Wrapper>
             <FormComponent>
+                <label>Username or Email:</label>
                 <InputComponent
-                    placeholder={"Email"}
+                    placeholder={"Username or email here..."}
                     type="email"
                     value={data.login}
                     onChange={(e) => HandleOnChangeInput(e, "login", setData, data)}
                 />
                 <SizedBox height={1.5} />
+                <label>Password:</label>
                 <InputComponent
-                    placeholder={"Password"}
+                    placeholder={"Password here... "}
                     type="password"
                     value={data.password}
                     onChange={(e) => HandleOnChangeInput(e, "password", setData, data)}

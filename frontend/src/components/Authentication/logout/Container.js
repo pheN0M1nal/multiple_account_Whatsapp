@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { logout } from "../../../api";
 import axiosServerInstance from "../../../config/api/axios";
-import { notifySuccess } from "../../../helpers/notifications/notifySuccess";
+import { notifySuccess } from "../../../utils/notifications/notifySuccess";
 import { Button } from "../../Global/Button";
 import { Spinner } from "../../Global/Spinner";
 
@@ -33,12 +33,12 @@ const LogoutContainer = () => {
                 }
             })
             .catch((err) => {});
-            window.localStorage.removeItem("access_token");
-            window.localStorage.removeItem("refresh_token");
-            notifySuccess("Logged out");
-            // window.location.reload();
-            navigate("/login", { replace: true });
-            window.location.reload();
+        window.localStorage.removeItem("access_token");
+        window.localStorage.removeItem("refresh_token");
+        notifySuccess("Logged out");
+        // window.location.reload();
+        navigate("/login", { replace: true });
+        window.location.reload();
     };
 
     return (

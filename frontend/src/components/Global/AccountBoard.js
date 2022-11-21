@@ -62,7 +62,7 @@ const Wrapper = styled.div`
         right: 0;
         top: 56px;
         z-index: 1;
-        background: var(--custom-secondry-bg);
+        background: #fff;
         border-radius: 5px;
         border: 1px solid #c0dfd9;
         min-width: 11.1rem;
@@ -136,6 +136,10 @@ export const AccountBoard = () => {
             </div>
             {subNavToggle ? (
                 <div id="pop-nav">
+                    <Link to={`/login`} className="logout-button">
+                        <img src={logout} alt="logout" />
+                        &nbsp; Log in
+                    </Link>
                     <Link to={`/logout`} className="logout-button">
                         <img src={logout} alt="logout" />
                         &nbsp; Log Out

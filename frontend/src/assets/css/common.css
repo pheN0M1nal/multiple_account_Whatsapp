@@ -64,7 +64,7 @@
     height: 70px;
     background: #fff;
 }
-.search_inner {
+.sidebar .search_inner {
     position: relative;
     display: flex;
     align-items: center;

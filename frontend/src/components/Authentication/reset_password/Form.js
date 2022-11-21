@@ -5,12 +5,12 @@ import { FormComponent } from "../components/FormElement";
 import { InputComponent } from "../components/InputELement";
 import { useNavigate, useLocation } from "react-router-dom";
 import { resetPasswordStep2 } from "../../../api";
-import { HandleOnChangeInput } from "../../../helpers/formInput/HandleOnChangeInput";
+import { HandleOnChangeInput } from "../../../utils/formInput/HandleOnChangeInput";
 import styled from "styled-components";
 import { Spinner } from "../../Global/Spinner";
 import axiosServerInstance from "../../../config/api/axios";
-import { notifySuccess } from "../../../helpers/notifications/notifySuccess";
-import { notifyApiErrorMessage } from "../../../helpers/notifications/notifyApiErrorMessage";
+import { notifySuccess } from "../../../utils/notifications/notifySuccess";
+import { notifyApiErrorMessage } from "../../../utils/notifications/notifyApiErrorMessage";
 
 const Wrapper = styled.div`
     form {

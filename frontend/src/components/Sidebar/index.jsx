@@ -5,20 +5,18 @@ import Icon from "components/Icon";
 import Alert from "./Alert";
 import Contact from "./Contact";
 import OptionsBtn from "components/OptionsButton";
-import { useUsersContext } from "context/usersContext";
+import { useMainContext } from "context/mainContext";
 
 const Sidebar = ({ setLogin, history }) => {
     //const [contacts, setContacts] = useState([])
 
-    const { users: contacts, profilePics, logout } = useUsersContext();
+    const { chats, logout, lastMessages } = useMainContext();
 
     useEffect(() => {
-        if (contacts === [] && profilePics === []) {
+        if (chats === []) {
             history.push("/");
         }
-
-        console.log(profilePics);
-    }, [contacts, profilePics, history]);
+    }, [chats, history]);
 
     // users && setContacts(users)
 
@@ -29,12 +27,12 @@ const Sidebar = ({ setLogin, history }) => {
                     <img src={avatar} alt="Karen Okonkwo" className="avatar" />
                 </div>
                 <div className="sidebar__actions">
-                    <button className="sidebar__action" aria-label="Status">
+                    {/* <button className="sidebar__action" aria-label="Status">
                         <Icon
                             id="status"
                             className="sidebar__action-icon sidebar__action-icon--status"
                         />
-                    </button>
+                    </button> */}
                     <button className="sidebar__action" aria-label="New chat">
                         <Icon id="chat" className="sidebar__action-icon" />
                     </button>
@@ -70,8 +68,8 @@ const Sidebar = ({ setLogin, history }) => {
                 </div>
             </div>
             <div className="sidebar__contacts">
-                {contacts.map((contact, index) => (
-                    <Contact key={index} contact={contact} profilePics={profilePics} />
+                {chats.map((chat, index) => (
+                    <Contact key={index} chat={chat} lastestMessages={lastMessages} />
                 ))}
             </div>
         </aside>
