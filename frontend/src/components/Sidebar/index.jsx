@@ -1,100 +1,81 @@
-import React, { useEffect, useState } from 'react'
-import './styles/main.css'
-import avatar from 'assets/images/profile-picture-girl-1.jpeg'
-import Icon from 'components/Icon'
-import Alert from './Alert'
-import Contact from './Contact'
-import OptionsBtn from 'components/OptionsButton'
-import { useUsersContext } from 'context/usersContext'
+import React, { useEffect, useState } from "react";
+import "./styles/main.css";
+import avatar from "assets/images/profile-picture-girl-1.jpeg";
+import Icon from "components/Icon";
+import Alert from "./Alert";
+import Contact from "./Contact";
+import OptionsBtn from "components/OptionsButton";
+import { useUsersContext } from "context/usersContext";
 
 const Sidebar = ({ setLogin, history }) => {
-	//const [contacts, setContacts] = useState([])
+    //const [contacts, setContacts] = useState([])
 
-	const { users: contacts, profilePics, logout } = useUsersContext()
+    const { users: contacts, profilePics, logout } = useUsersContext();
 
-	useEffect(() => {
-		if (contacts === [] && profilePics === []) {
-			history.push('/')
-		}
+    useEffect(() => {
+        if (contacts === [] && profilePics === []) {
+            history.push("/");
+        }
 
-		console.log(profilePics)
-	}, [contacts, profilePics, history])
+        console.log(profilePics);
+    }, [contacts, profilePics, history]);
 
-	// users && setContacts(users)
+    // users && setContacts(users)
 
-	return (
-		<aside className='sidebar'>
-			<header className='header'>
-				<div className='sidebar__avatar-wrapper'>
-					<img
-						src={avatar}
-						alt='Karen Okonkwo'
-						className='avatar'
-					/>
-				</div>
-				<div className='sidebar__actions'>
-					<button
-						className='sidebar__action'
-						aria-label='Status'>
-						<Icon
-							id='status'
-							className='sidebar__action-icon sidebar__action-icon--status'
-						/>
-					</button>
-					<button
-						className='sidebar__action'
-						aria-label='New chat'>
-						<Icon
-							id='chat'
-							className='sidebar__action-icon'
-						/>
-					</button>
-					<OptionsBtn
-						className='sidebar__action'
-						ariaLabel='Menu'
-						iconId='menu'
-						iconClassName='sidebar__action-icon'
-						options={[
-							'New group',
-							'Create a room',
-							'Profile',
-							'Archived',
-							'Starred',
-							'Settings',
-							'Log out',
-						]}
-						logout={logout}
-						setLogin={setLogin}
-					/>
-				</div>
-			</header>
-			<Alert />
-			<div className='search-wrapper'>
-				<div className='search-icons'>
-					<Icon
-						id='search'
-						className='search-icon'
-					/>
-					<button className='search__back-btn'>
-						<Icon id='back' />
-					</button>
-				</div>
-				<input
-					className='search'
-					placeholder='Search or start a new chat'
-				/>
-			</div>
-			<div className='sidebar__contacts'>
-				{contacts.map((contact, index) => (
-					<Contact
-						key={index}
-						contact={contact}
-						profilePics={profilePics}
-					/>
-				))}
-			</div>
-		</aside>
-	)
-}
+    return (
+        <aside className="sidebar">
+            <header className="header">
+                <div className="sidebar__avatar-wrapper">
+                    <img src={avatar} alt="Karen Okonkwo" className="avatar" />
+                </div>
+                <div className="sidebar__actions">
+                    <button className="sidebar__action" aria-label="Status">
+                        <Icon
+                            id="status"
+                            className="sidebar__action-icon sidebar__action-icon--status"
+                        />
+                    </button>
+                    <button className="sidebar__action" aria-label="New chat">
+                        <Icon id="chat" className="sidebar__action-icon" />
+                    </button>
+                    <OptionsBtn
+                        className="sidebar__action"
+                        ariaLabel="Menu"
+                        iconId="menu"
+                        iconClassName="sidebar__action-icon"
+                        options={[
+                            "New group",
+                            "Create a room",
+                            "Profile",
+                            "Archived",
+                            "Starred",
+                            "Settings",
+                            "Log out",
+                        ]}
+                        logout={logout}
+                        setLogin={setLogin}
+                    />
+                </div>
+            </header>
+            <Alert />
+            <div className="search-wrapper">
+                <div className="search_inner">
+                    <div className="search-icons">
+                        <Icon id="search" className="search-icon" />
+                        <button className="search__back-btn">
+                            <Icon id="back" />
+                        </button>
+                    </div>
+                    <input className="search" placeholder="Search or start a new chat" />
+                </div>
+            </div>
+            <div className="sidebar__contacts">
+                {contacts.map((contact, index) => (
+                    <Contact key={index} contact={contact} profilePics={profilePics} />
+                ))}
+            </div>
+        </aside>
+    );
+};
 
-export default Sidebar
+export default Sidebar;

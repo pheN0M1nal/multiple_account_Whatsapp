@@ -2,7 +2,7 @@
 .sidebar {
     min-width: 300px;
     flex: 40%;
-    border-right: 1px solid #DADADA;
+    border-right: 1px solid #dadada;
     display: flex;
     flex-direction: column;
 }
@@ -18,7 +18,7 @@
     margin-right: 20px;
 }
 
-.sidebar__actions>* {
+.sidebar__actions > * {
     display: inline-block;
     margin-left: 25px;
     cursor: pointer;
@@ -37,18 +37,19 @@
     padding: 20px;
     display: flex;
     align-items: center;
+    display: none;
 }
 
 .sidebar__alert--warning {
-    background: #FED859;
+    background: #fed859;
 }
 
 .sidebar__alert--info {
-    background: #9DE1FE;
+    background: #9de1fe;
 }
 
 .sidebar__alert--danger {
-    background: #F3645B;
+    background: #f3645b;
 }
 
 .sidebar__alert-icon-wrapper {
@@ -71,11 +72,12 @@
 
 .sidebar__alert-text:last-of-type {
     font-size: 0.85rem;
-    color: #414A4E;
+    color: #414a4e;
     line-height: 17px;
 }
 
-.sidebar__alert--danger .sidebar__alert-text:first-of-type, .sidebar__alert--danger .sidebar__alert-text:last-of-type {
+.sidebar__alert--danger .sidebar__alert-text:first-of-type,
+.sidebar__alert--danger .sidebar__alert-text:last-of-type {
     color: white;
 }
 
@@ -86,9 +88,10 @@
 .sidebar__search-wrapper {
     padding: 7px 10px;
     height: 50px;
-    background: #F6F6F6;
+    background: #f6f6f6;
     position: relative;
 }
+
 
 /* End Sidebar Search */
 
@@ -97,8 +100,8 @@
 .sidebar__contacts {
     flex: 1;
     overflow-y: scroll;
-    background: #F5F5F5;
-    border-top: 1px solid #DADADA;
+    /* background: #f5f5f5; */
+    border-top: 1px solid #cecece;
 }
 
 .sidebar-contact {
@@ -106,12 +109,12 @@
     padding: 10px 20px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #EBEBEB;
+    border-bottom: 1px solid #cecece;
     cursor: pointer;
 }
 
 .sidebar-contact:hover {
-    background-color: #EBEBEB;
+    background-color: #ebebeb;
 }
 
 .sidebar-contact__avatar-wrapper {
@@ -125,13 +128,16 @@
     flex: 1;
 }
 
-.sidebar-contact__top-content, .sidebar-contact__bottom-content, .sidebar-contact__message-wrapper {
+.sidebar-contact__top-content,
+.sidebar-contact__bottom-content,
+.sidebar-contact__message-wrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.sidebar-contact__name, .sidebar-contact__message {
+.sidebar-contact__name,
+.sidebar-contact__message {
     flex: 1;
     overflow: hidden;
     white-space: nowrap;
@@ -161,12 +167,12 @@
 }
 
 .sidebar-contact__message-icon {
-    color: #B3B3B3;
+    color: #b3b3b3;
     margin-right: 3px;
 }
 
 .sidebar-contact__message-icon--blue {
-    color: #0DA9E5;
+    color: #0da9e5;
 }
 
 .sidebar-contact__message--unread {
@@ -174,7 +180,8 @@
     font-weight: 500;
 }
 
-.sidebar-contact__icons, .sidebar-contact:not(:focus) .sidebar-contact__icons {
+.sidebar-contact__icons,
+.sidebar-contact:not(:focus) .sidebar-contact__icons {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -186,9 +193,9 @@
     transform: translateX(0);
 }
 
-.sidebar-contact__icons>* {
+.sidebar-contact__icons > * {
     margin-left: 8px;
-    color: #B3B3B3;
+    color: #b3b3b3;
 }
 
 .sidebar-contact__unread {
@@ -212,7 +219,7 @@
     .sidebar {
         flex: 35%;
     }
-    .sidebar~div {
+    .sidebar ~ div {
         flex: 65%;
     }
 }
@@ -221,7 +228,7 @@
     .sidebar {
         flex: 30%;
     }
-    .sidebar~div {
+    .sidebar ~ div {
         flex: 70%;
     }
 }
