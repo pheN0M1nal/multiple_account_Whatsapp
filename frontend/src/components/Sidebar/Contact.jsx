@@ -74,7 +74,8 @@ const Contact = ({ chat, lastestMessages }) => {
 								<i> typing...</i>
 							) : lastMessage ? (
 								lastMessage?.message[0]?.body ? (
-									lastMessage.message[0]?.body
+									lastMessage?.message[0]?.id.fromMe ? 
+									"You: "+lastMessage.message[0]?.body : lastMessage.message[0]?.body 
 								) : (
 									''
 								)

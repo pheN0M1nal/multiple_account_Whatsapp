@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import Loader from "./components/Loader";
-// import Home from "./pages/Home";
+import Home from "./pages/Home";
 import Sidebar from "components/Sidebar";
 import Chat from "pages/Chat";
 import QrCodeScreen from "screens/QrCodeScreen";
@@ -39,7 +39,7 @@ function App() {
 
         socket.current.on("LoggedIn", () => {
             setStartLoadProgress(false);
-            setLogin(false);
+            setLogin(true);
         });
 
         return () => {
@@ -59,11 +59,14 @@ function App() {
                             <Sidebar setLogin={setLogin} />
                             <Routes>
                                 <Route path="/chat/:id" exact={true} element={<Chat />} />
-                                {/* <Route path="/" exact={true} element={<Home />} /> */}
+                                <Route path="/" exact={true} element={<Home />} />
                             </Routes>
                         </div>
                     </MainWrapper>
+                    <Routes>
+
                                 <Route path="/" exact={true} element={<LoginContainer />} />
+                    </Routes>
                 </div>
             </div>
         ) : (
