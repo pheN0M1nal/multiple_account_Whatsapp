@@ -1,7 +1,5 @@
 import styled from "styled-components";
-import { useContext } from "react";
 import { AccountBoard } from "../AccountBoard";
-import { NavigationContext } from "../MainWrapper";
 import { NavigationBrandContainer } from "./brand/Container";
 
 const StyledComponent = styled.div`
@@ -68,10 +66,9 @@ const StyledComponent = styled.div`
 `;
 
 export const NavigationContainer = () => {
-    const { setMobileSubNavEnabled, mobileSubNavEnabled } = useContext(NavigationContext);
     return (
         <>
-            <StyledComponent mobileSubNavEnabled={mobileSubNavEnabled}>
+            <StyledComponent>
                 <div className="headerOuter ">
                     <div className="authMenuBarWrapper">
                         <NavigationBrandContainer />

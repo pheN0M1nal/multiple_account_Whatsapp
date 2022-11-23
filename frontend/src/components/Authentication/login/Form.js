@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import { Button } from "../../Global/Button";
 import { SizedBox } from "../../Global/SizedBox";
 import { AuthButtonContainer } from "../components/AuthButtonContainer";
@@ -43,7 +43,7 @@ export const LoginForm = () => {
     });
     const [showSpinner, setShowSpinner] = useState(false);
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const validateFields = () => {
         let state = true;
         const fields = ["login", "password"];

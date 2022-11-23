@@ -15,6 +15,6 @@ const Logo = styled.div`
 
 export const CompanyLogo = ({ size }) => (
     <Logo size={size}>
-        <img src={logo} />
+        <img src={logo} alt="" />
     </Logo>
 );

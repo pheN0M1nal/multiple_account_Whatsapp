@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Wrapper = styled.button`
     margin-top: ${({ marginTop }) => marginTop}rem;
-    background-color: var(--custom-${({ BgColor }) => BgColor || "btn-bg"});
+    background-color:#1560BD;
     text-align: center;
     font-size: ${({ fontSize }) => fontSize}px;
     padding: ${({ paddingTopBottom }) => paddingTopBottom || 0.2}rem
@@ -18,9 +18,10 @@ const Wrapper = styled.button`
     max-width: ${(props) => (props.maxWidth ? `${props.maxWidth}px` : "initial")};
     height: ${(props) => (props.height ? `${props.height}px` : `34px`)};
     transition: all 0.25s ease-out;
-    color: var(--custom-${({ inverted }) => (inverted ? "white" : "black")});
+    color: var(--custom-${({ inverted }) => (inverted ? "white" : "white")});
     visibility: ${(props) => (props.disabled === true ? `hidden` : `visible`)};
     cursor: pointer;
+    color:white;
     a {
         color: white;
         display: inline-block;

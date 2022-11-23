@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { MainContainer } from "./MainContainer";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { NavigationContainer } from "./navigation/Container";
 import { FooterContainer } from "./footer/Container";
 
@@ -12,7 +12,7 @@ const StyledContainer = styled.div`
     .MainContent {
         width: 100%;
         height: 100vh;
-        background-color: var(--custom-primary-bg);
+        background: #F8F8F8;
         color: var(--custom-white);
         overflow: auto;
         display: flex;

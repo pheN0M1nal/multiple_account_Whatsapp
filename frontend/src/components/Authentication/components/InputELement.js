@@ -1,17 +1,16 @@
 import styled from "styled-components";
 
 const InputElement = styled.input`
-  border: none;
+  border: 1px solid #FF8D03;
   outline: none;
-  background-color: var(--custom-transparent);
+  background-color: #F5F5F5;
   width: 100%;
   max-width: 535px;
   height: 50px;
-
+border-radius:5px;
   letter-spacing: 1px;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--custom-border-color);
   color: var(--custom-txt-color);
   font-size: var(--font-16);
   text-indent: 10px;
